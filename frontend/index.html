@@ -1,0 +1,75 @@
+<!-- Lightweight browser UI for querying Track A (Hybrid RAG) and Track B (Neo4j AuraDB KG RAG). -->
+<!-- Performance summary: -->
+<!-- - Zero external CSS/JS build step or framework bundle: served straight from FastAPI on port 8000. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dual RAG Explorer — Hybrid RAG &amp; Neo4j AuraDB KG RAG</title>
+  <style>
+    /* Clean system-font styling with zero external stylesheet network latency. */
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 24px; background: #f7f8fa; color: #1a1d24; }
+    .container { max-width: 1180px; margin: 0 auto; }
+    .panel { background: #fff; border: 1px solid #dfe3eb; border-radius: 10px; padding: 18px; margin-bottom: 18px; }
+    .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 12px; }
+    input[type="text"], select, input[type="number"] { padding: 9px 12px; border: 1px solid #cbd2df; border-radius: 6px; font-size: 14px; }
+    input[type="text"] { flex: 1; min-width: 280px; }
+    button { padding: 9px 16px; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; background: #1f6feb; color: #fff; }
+    button.secondary { background: #4b5563; }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px; }
+    .card { background: #fff; border: 1px solid #dfe3eb; border-radius: 10px; padding: 16px; }
+    .meta { font-size: 12px; color: #57606a; margin-bottom: 10px; }
+    pre.answer { white-space: pre-wrap; word-wrap: break-word; font-family: inherit; line-height: 1.5; margin: 0; }
+    .cypher-box { margin-top: 12px; padding: 10px 12px; background: #f3f6fa; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; }
+    .cypher-box pre { margin: 6px 0 0; white-space: pre-wrap; word-break: break-word; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #0f172a; }
+    .sources { margin-top: 12px; padding-top: 10px; border-top: 1px solid #eef1f5; font-size: 12px; color: #374151; }
+    .status { font-size: 13px; color: #374151; min-height: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="panel">
+      <h2>Dual RAG Explorer (Track A: Hybrid RAG + Track B: Neo4j AuraDB KG RAG)</h2>
+      <div class="row">
+        <label for="pdfSelect"><strong>PDF:</strong></label>
+        <select id="pdfSelect">
+          <option value="spotify_web_app_architecture.pdf">spotify_web_app_architecture.pdf</option>
+        </select>
+        <label><input type="checkbox" id="buildGraphCheck" /> Build Neo4j Graph on Ingest</label>
+        <label for="maxChunksInput">Max KG Chunks:</label>
+        <input type="number" id="maxChunksInput" value="10" min="1" max="200" style="width: 78px;" />
+        <button id="ingestBtn" class="secondary" type="button">Ingest PDF</button>
+      </div>
+      <div class="row">
+        <input id="questionInput" type="text" value="Which databases, protocols, and services connect with the frontend and backend?" placeholder="Ask a question about the architecture..." />
+        <button id="askBtn" type="button">Query Both Pipelines</button>
+      </div>
+      <div id="statusBar" class="status">Ready. Run uvicorn backend.app.main:app --reload --port 8000 and open [http://127.0.0.1:8000/](http://127.0.0.1:8000/)</div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Track A: Hybrid RAG (BM25 + FAISS + Cross-Encoder)</h3>
+        <div id="hybridMeta" class="meta">Latency: —</div>
+        <pre id="hybridAnswer" class="answer">No query run yet.</pre>
+        <div id="hybridSources" class="sources"></div>
+      </div>
+
+      <div class="card">
+        <h3>Track B: Knowledge Graph RAG (Neo4j AuraDB)</h3>
+        <div id="kgMeta" class="meta">Latency: —</div>
+        <pre id="kgAnswer" class="answer">No query run yet.</pre>
+        <div class="cypher-box">
+          <strong>Generated Cypher Query:</strong>
+          <pre id="kgCypher">—</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Defer script execution until DOM elements are parsed so initial element lookups never return null. -->
+  <script src="app.js" defer></script>
+</body>
+</html>

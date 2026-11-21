@@ -1,0 +1,11 @@
+python-dotenv
+langchain
+langchain-core
+langchain-community
+langchain-text-splitters
+langchain-openai
+langchain-neo4j
+neo4j
+faiss-cpu
+rank_bm25
+pypdf

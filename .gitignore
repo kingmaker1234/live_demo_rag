@@ -1,0 +1,9 @@
+.env
+Neo4j-*.txt
+__pycache__/
+*.pyc
+*.pyo
+vevn/
+venv/
+.venv/
+.DS_Store

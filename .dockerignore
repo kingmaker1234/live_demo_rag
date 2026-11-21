@@ -1,0 +1,9 @@
+vevn/
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.git/
+.env
+backend/storage/faiss_index/*
